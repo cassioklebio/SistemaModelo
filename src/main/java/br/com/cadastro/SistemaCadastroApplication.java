@@ -1,5 +1,6 @@
 package br.com.cadastro;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,20 +13,28 @@ import br.com.cadastro.domain.Cidade;
 import br.com.cadastro.domain.Cliente;
 import br.com.cadastro.domain.Endereco;
 import br.com.cadastro.domain.Estado;
+import br.com.cadastro.domain.Pagamento;
+import br.com.cadastro.domain.PagamentoComBoleto;
+import br.com.cadastro.domain.PagamentoComCartao;
+import br.com.cadastro.domain.Pedido;
 import br.com.cadastro.domain.Produto;
+import br.com.cadastro.domain.enums.EstadoPagamento;
 import br.com.cadastro.domain.enums.TipoCliente;
 import br.com.cadastro.repositories.CategoriaRepository;
 import br.com.cadastro.repositories.CidadeRepository;
 import br.com.cadastro.repositories.ClienteRepository;
 import br.com.cadastro.repositories.EnderecoRepository;
 import br.com.cadastro.repositories.EstadoRepository;
+import br.com.cadastro.repositories.PagamentoRepository;
+import br.com.cadastro.repositories.PedidoRepository;
 import br.com.cadastro.repositories.ProdutoRepository;
 
 @SpringBootApplication
 public class SistemaCadastroApplication implements CommandLineRunner {
 	
+	
 	@Autowired
-	private CategoriaRepository categoriaRepository;
+	private CategoriaRepository entityManagerFactory;
 	
 	@Autowired
 	private ProdutoRepository produtoRepository;
@@ -42,6 +51,11 @@ public class SistemaCadastroApplication implements CommandLineRunner {
 	@Autowired
 	private EnderecoRepository enderecoRepository;
 	
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	
+	@Autowired
+	private PagamentoRepository pagamentoRepository;
 	
 	
 
@@ -67,7 +81,8 @@ public class SistemaCadastroApplication implements CommandLineRunner {
 		p2.getCategorias().addAll(Arrays.asList(cat1, cat2));
 		p3.getCategorias().addAll(Arrays.asList(cat1));
 		
-		categoriaRepository.saveAll(Arrays.asList(cat1, cat2));
+		
+		entityManagerFactory.saveAll(Arrays.asList(cat1, cat2));
 		
 		produtoRepository.saveAll(Arrays.asList(p1,p2,p3));
 		
@@ -98,6 +113,23 @@ public class SistemaCadastroApplication implements CommandLineRunner {
 		
 		clienteRepository.saveAll(Arrays.asList(cli1));
 		enderecoRepository.saveAll(Arrays.asList(e1, e2));
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		
+		Pedido ped1 = new Pedido(null, sdf.parse("19/03/2019 11:01"),cli1, e1);
+		
+		Pedido ped2 = new Pedido(null, sdf.parse("19/03/2019 11:30"), cli1, e2);
+		
+		Pagamento pagto1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, ped1, 6);
+		ped1.setPagamento(pagto1);
+		
+		Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf.parse("20/03/2019 00:00"), null);
+		ped2.setPagamento(pagto2);
+		
+		cli1.getPedidos().addAll(Arrays.asList(ped1, ped2));
+		
+		pedidoRepository.saveAll(Arrays.asList(ped1,ped2));
+		pagamentoRepository.saveAll(Arrays.asList(pagto1,pagto2));
 		
 		
 	}
