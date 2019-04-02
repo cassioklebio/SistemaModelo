@@ -8,4 +8,6 @@ import br.com.cadastro.domain.Cidade;
 @Repository
 public interface CidadeRepository extends JpaRepository<Cidade, Integer> {
 
+	
+
 }
