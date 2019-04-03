@@ -59,7 +59,7 @@ public class ClienteService {
 			repo.deleteById(id);
 		} catch (DataIntegrityViolationException e) {
 			throw new DataIntegrityViolationException(
-					"Não é possivel excluir um Cliente por há entidades relacionadas");
+					"Não é possivel excluir um Cliente por há pedidos relacionadas");
 		}
 	}
 
